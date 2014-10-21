@@ -23,7 +23,7 @@ define swap_dialog
 endef
 
 # $(themes)
-themes=find rc.lua* -not -name rc.lua
+themes=find rc.*.lua -not -name rc.lua
 
 # number of current themes
 n_themes=$(themes) | wc -l
