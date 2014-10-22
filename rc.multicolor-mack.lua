@@ -50,6 +50,8 @@ end
 
 run_once("urxvtd")
 run_once("unclutter")
+run_once("synapse -s")
+run_once("nm-applet")
 -- }}}
 
 -- {{{ Variable definitions
@@ -62,7 +64,7 @@ beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/multicolor/theme.lu
 -- common
 modkey     = "Mod4"
 altkey     = "Mod1"
-terminal   = "gnome-terminal" or "xterm"
+terminal   = "terminator" or "gnome-terminal" or "xterm"
 editor     = os.getenv("EDITOR") or "vi" or "nano"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -106,21 +108,23 @@ wp_files = { "127_1242.JPG","127_1266.JPG","127_1269.JPG","127_1271.JPG","127_12
 
 -- setup the timer
 wp_timer = timer { timeout = wp_timeout }
-wp_timer:connect_signal("timeout", function()
+wp_timer:connect_signal("timeout",
+   function()
+      -- set wallpaper to current index
+      for s = 1, screen.count() do
+	 gears.wallpaper.maximized( wp_path .. wp_files[wp_index] , s, true)
 
-  -- set wallpaper to current index
-  gears.wallpaper.maximized( wp_path .. wp_files[wp_index] , s, true)
+         -- get next random index
+         wp_index = math.random( 1, #wp_files)
+      end
+      -- stop the timer (we don't need multiple instances running at the same time)
+      wp_timer:stop()
 
-  -- stop the timer (we don't need multiple instances running at the same time)
-  wp_timer:stop()
-
-  -- get next random index
-  wp_index = math.random( 1, #wp_files)
-
-  --restart the timer
-  wp_timer.timeout = wp_timeout
-  wp_timer:start()
-end)
+      --restart the timer
+      wp_timer.timeout = wp_timeout
+      wp_timer:start()
+   end
+)
 
 -- initial start when rc.lua is first run
 wp_timer:start()
@@ -427,6 +431,13 @@ globalkeys = awful.util.table.join(
 
     awful.key({ altkey, "Control" }, "l", function () awful.util.spawn("xlock -mode random") end),
 
+    -- Brightness
+
+    awful.key({ }, "XF86MonBrightnessDown", function ()
+        awful.util.spawn("xbacklight -dec 10") end),
+    awful.key({ }, "XF86MonBrightnessUp", function ()
+        awful.util.spawn("xbacklight -inc 10") end),
+
     -- Tag browsing
     awful.key({ modkey }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey }, "Right",  awful.tag.viewnext       ),
@@ -511,7 +522,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "q",      awesome.quit),
 
     -- Dropdown terminal
-    awful.key({ modkey,	          }, "z",      function () drop(terminal) end),
+    awful.key({ 	          }, "F12",      function () drop(terminal) end),
 
     -- Widgets popups
     awful.key({ altkey,           }, "c",      function () lain.widgets.calendar:show(7) end),
