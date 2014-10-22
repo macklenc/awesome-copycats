@@ -51,7 +51,8 @@ end
 run_once("urxvtd")
 run_once("unclutter")
 run_once("synapse -s")
-run_once("nm-applet")
+run_once("nm-applet &")
+run_once("xscreensaver &")
 -- }}}
 
 -- {{{ Variable definitions
@@ -366,10 +367,12 @@ for s = 1, screen.count() do
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     --right_layout:add(mailicon)
     --right_layout:add(mailwidget)
-    right_layout:add(netdownicon)
-    right_layout:add(netdowninfo)
-    right_layout:add(netupicon)
-    right_layout:add(netupinfo)
+    if s == 1 then
+       right_layout:add(netdownicon)
+       right_layout:add(netdowninfo)
+       right_layout:add(netupicon)
+       right_layout:add(netupinfo)
+    end
     right_layout:add(volicon)
     right_layout:add(volumewidget)
     right_layout:add(memicon)
@@ -378,10 +381,12 @@ for s = 1, screen.count() do
     right_layout:add(cpuwidget)
     right_layout:add(fsicon)
     right_layout:add(fswidget)
-    right_layout:add(weathericon)
-    right_layout:add(yawn.widget)
-    right_layout:add(tempicon)
-    right_layout:add(tempwidget)
+    if s == 1 then
+       right_layout:add(weathericon)
+       right_layout:add(yawn.widget)
+       right_layout:add(tempicon)
+       right_layout:add(tempwidget)
+    end
     right_layout:add(baticon)
     right_layout:add(batwidget)
     --right_layout:add(clockicon)
@@ -448,7 +453,8 @@ globalkeys = awful.util.table.join(
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
     awful.key({ altkey }, "p", function() os.execute("screenshot") end),
 
-    awful.key({ altkey, "Control" }, "l", function () awful.util.spawn("xlock -mode random") end),
+    --awful.key({ altkey, "Control" }, "l", function () awful.util.spawn("xlock -mode random") end),
+    awful.key({ altkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -lock") end),
 
     -- Brightness
 
