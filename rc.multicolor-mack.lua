@@ -424,6 +424,25 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 -- {{{ Key bindings
+volumewidget:buttons(awful.util.table.join(
+    -- ALSA volume control
+    awful.button({ }, 4,
+        function ()
+	   awful.util.spawn("amixer -c PCH -q set Master 1%+")
+	   volumewidget.update()
+	end),
+    awful.button({ }, 5,
+        function ()
+	   awful.util.spawn("amixer -c PCH -q set Master 1%-")
+	   volumewidget.update()
+	end),
+    awful.button({ }, 1,
+        function ()
+	   awful.util.spawn("amixer -q set Master playback toggle")
+	   volumewidget.update()
+	end)
+))
+
 globalkeys = awful.util.table.join(
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
