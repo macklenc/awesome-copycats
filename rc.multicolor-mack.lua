@@ -15,6 +15,7 @@ local beautiful = require("beautiful")
 local naughty   = require("naughty")
 local drop      = require("scratchdrop")
 local lain      = require("lain")
+local assault = require('assault')
 -- }}}
 
 -- {{{ Error handling
@@ -51,8 +52,9 @@ end
 run_once("urxvtd")
 run_once("unclutter")
 run_once("synapse -s")
-run_once("nm-applet &")
-run_once("xscreensaver &")
+run_once("nm-applet")
+run_once("cinnamon-screensaver &")
+--run_once("disconnectMonitor")
 -- }}}
 
 -- {{{ Variable definitions
@@ -206,7 +208,7 @@ tempwidget = lain.widgets.temp({
 })
 
 -- Battery
-baticon = wibox.widget.imagebox(beautiful.widget_batt)
+--baticon = wibox.widget.imagebox(beautiful.widget_batt)
 batwidget = lain.widgets.bat({
     settings = function()
         if bat_now.perc == "N/A" then
@@ -218,6 +220,20 @@ batwidget = lain.widgets.bat({
     end
 })
 
+local spacer = wibox.widget.textbox()
+spacer:set_text(" ")
+
+myassault = assault({
+	battery = "BAT0", -- battery ID to get data from
+   	adapter = "AC", -- ID of the AC adapter to get data from
+  	critical_level = 0.15,
+  	critical_color = "#ff0000",
+	charging_color = "#00ff00",
+	bolt_height = 5,
+	width = 20,
+	height = 8,
+	stroke_width = 1
+})
 -- ALSA volume
 volicon = wibox.widget.imagebox(beautiful.widget_vol)
 volumewidget = lain.widgets.alsa({
@@ -387,7 +403,10 @@ for s = 1, screen.count() do
        right_layout:add(tempicon)
        right_layout:add(tempwidget)
     end
-    right_layout:add(baticon)
+    --right_layout:add(baticon)
+    --right_layout:add(batwidget)
+    right_layout:add(myassault)
+    right_layout:add(spacer)
     right_layout:add(batwidget)
     --right_layout:add(clockicon)
     right_layout:add(mytextclock)
@@ -454,7 +473,7 @@ globalkeys = awful.util.table.join(
     awful.key({ altkey }, "p", function() os.execute("screenshot") end),
 
     --awful.key({ altkey, "Control" }, "l", function () awful.util.spawn("xlock -mode random") end),
-    awful.key({ altkey, "Control" }, "l", function () awful.util.spawn("xscreensaver-command -lock") end),
+    awful.key({ altkey, "Control" }, "l", function () awful.util.spawn("cinnamon-screensaver-command --lock") end),
 
     -- Brightness
 
