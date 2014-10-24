@@ -1,41 +1,54 @@
-#! /usr/bin/make -f
+#! /bin/bash
 
 # Awesome Copycats switch theme script
 # It also updates to latest commit.
-# Dependencies: make, git
-
 
 DESTDIR=~/.config/awesome
-PROJECT=copycat-killer/awesome-copycats
+PROJECT=macklenc/awesome-copycats
+n_themes=$(find -name rc.\*.lua | wc -l)
+restartA=0
+swap=0
+# swap_dialog
 
-# $(swap_dialog)
-define swap_dialog
-	echo ; \
-	echo "see https://github.com/$(PROJECT)" ; \
-	echo ; $(themes) | cat -n ; echo ; \
-	typeset -i num; \
-	read -p "Switch to theme: " num ; \
-	if [ ! -z $${num} -a $${num} -ge 1 -a -le $${n_themes} ] ; then \
-	  NEW_THEME=$$($(themes) | head -n$${num} | tail -n1 ) ; \
-	  cp $${NEW_THEME} rc.lua ; \
-	  echo "Theme is now $${NEW_THEME}"; \
+swap_dialog(){
+   echo
+   echo "see https://github.com/$PROJECT"
+   find -name rc.\*.lua | sed 's/ /\n/g;s/\.\///g' | cat -n
+   read -p "Switch to theme: " num
+   swap_cmd $num
+}
+
+swap_cmd(){
+   num=$1
+   if [ ! -z $num -a $num -ge 1 -a $num -le $n_themes ] ; then
+      NEW_THEME=$(find -name rc.\*.lua | head -n $num | tail -n 1)
+      cp $NEW_THEME rc.lua
+	  echo -e "\nTheme is now $NEW_THEME"
   else echo " !! Aborted. " ; fi
-endef
+}
 
-# $(themes)
-themes=find rc.*.lua -not -name rc.lua
+restart_awesome(){
+   #echo 'awesome.restart()' | awesome-client 2>&1 > /dev/null
+   pkill -HUP awesome
+}
 
-# number of current themes
-n_themes=$(themes) | wc -l
-
-.SILENT : all
-
-all: $(DESTDIR)
-	cd $(DESTDIR) && \
-	echo -n $(git pull)#"Already up-to-date."; \
-	git submodule init ; \
-	git submodule update; \
-	$(swap_dialog)
-
-$(DESTDIR):
-	git clone https://github.com/${PROJECT}.git $@
+cd $DESTDIR && echo -n $(git pull)
+git submodule init
+git submodule update
+for arg in "$@"
+do
+   if [ "$arg" == "-r" ] ; then
+      restartA=1
+   else
+      swap=$arg
+   fi
+done
+if [ $swap -ne 0 ] ; then
+   swap_cmd $swap
+else
+   swap_dialog
+fi
+if [ $restartA -eq 1 ] ; then
+   restart_awesome
+fi
+exit
