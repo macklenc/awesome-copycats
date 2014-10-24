@@ -106,8 +106,25 @@ end
 -- {{{ Wallpaper
 wp_index = 1
 wp_timeout  = 30
+
+--Edit this to change your wallpaper directory
 wp_path = "/windows/Users/Chris/Pictures/Backgrounds/"
-wp_files = { "127_1242.JPG","127_1266.JPG","127_1269.JPG","127_1271.JPG","127_1288.JPG","127_1299.JPG","127_1324.JPG","127_1334.JPG","127_1372.JPG","1-IMG_20140526_132032.jpg","1-IMG_20140526_132057.jpg","Chris 2 003.JPG","Chris 2 066.JPG","Chris 2 070.JPG","DSC00109.JPG","DSC00121.JPG","DSC00124.JPG","DSC00133.JPG","DSC00144.JPG","DSC00167.JPG","DSC00188.JPG","DSC00206.JPG","DSC02073.JPG","DSC02095.JPG","DSC02725.JPG","DSC02754.JPG","DSC03053.JPG","DSC03063.JPG","DSC04298.JPG","DSC04304.JPG","DSC04338.JPG","DSC04367.JPG","DSC04396.JPG","DSC04406.JPG","DSC04540.JPG","DSC04545.JPG","DSC04595.JPG","DSC04599.JPG","DSC04607.JPG","DSC04614.JPG","DSC04619.JPG","DSC04626.JPG","DSC04640.JPG","DSC04646.JPG","DSC04680.JPG","DSC04714.JPG","DSC04720.JPG","DSC04763.JPG","DSC04782.JPG","IMG_20131209_070655.jpg","IMG_20131209_070707.jpg","IMG_20140526_133003.jpg","IMG_20140604_194233.jpg","IMG_20140604_194514.jpg","IMG_20140627_193828.jpg","IMG_20140718_114703.jpg","IMG_20140718_120902.jpg","IMG_20140814_222303.jpg","IMG_2075.JPG","IMG_2098.JPG" }
+script_path=os.getenv("HOME") .. "/.config/awesome/lain/scripts/"
+
+function split(inputstr, sep)
+    if sep == nil then
+	sep = "%s"
+    end
+    local t={} ; i=1
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        t[i] = str
+        i = i + 1
+    end
+    return t
+end
+
+f = io.popen(script_path .. "getwallpapers " .. wp_path)
+wp_files = split(f:read("*a"),"\n")
 
 -- setup the timer
 wp_timer = timer { timeout = wp_timeout }
@@ -115,7 +132,7 @@ wp_timer:connect_signal("timeout",
    function()
       -- set wallpaper to current index
       for s = 1, screen.count() do
-	 gears.wallpaper.maximized( wp_path .. wp_files[wp_index] , s, true)
+	 gears.wallpaper.maximized( wp_files[wp_index] , s, true)
 
          -- get next random index
          wp_index = math.random( 1, #wp_files)
