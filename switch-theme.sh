@@ -1,41 +1,84 @@
-#! /usr/bin/make -f
+#! /bin/bash
 
 # Awesome Copycats switch theme script
 # It also updates to latest commit.
-# Dependencies: make, git
-
 
 DESTDIR=~/.config/awesome
-PROJECT=copycat-killer/awesome-copycats
+PROJECT=macklenc/awesome-copycats
+n_themes=$(find -name rc.\*.lua | wc -l)
+restartA=0
+num=0
+str=""
 
-# $(swap_dialog)
-define swap_dialog
-	echo ; \
-	echo "see https://github.com/$(PROJECT)" ; \
-	echo ; $(themes) | cat -n ; echo ; \
-	typeset -i num; \
-	read -p "Switch to theme: " num ; \
-	if [ ! -z $${num} -a $${num} -ge 1 -a -le $${n_themes} ] ; then \
-	  NEW_THEME=$$($(themes) | head -n$${num} | tail -n1 ) ; \
-	  cp $${NEW_THEME} rc.lua ; \
-	  echo "Theme is now $${NEW_THEME}"; \
-  else echo " !! Aborted. " ; fi
-endef
+# -------------------------------------------------------------------------
+#   Decoding options
+# -------------------------------------------------------------------------
+USAGE="Usage: $0 [-h(elp)] | [-r(estart Awesome)] | [-n(choice number)] [-s(choice string)]"
 
-# $(themes)
-themes=find rc.*.lua -not -name rc.lua
+while [ $# -gt 0 ]; do
+   case "$1" in
+      "-h" )
+	 echo $USAGE
+	 exit
+	 ;;
+      "-r" )
+	 restartA=1
+	 ;;
+      "-n" )
+	 num=$2
+	 shift
+	 ;;
+      "-s" )
+	 str=$2
+	 shift
+	 ;;
+      * )
+	 echo $USAGE
+	 exit
+	 ;;
+   esac
+   shift
+done
 
-# number of current themes
-n_themes=$(themes) | wc -l
 
-.SILENT : all
+swap_dialog(){
+   echo
+   echo "see https://github.com/$PROJECT"
+   find -name rc.\*.lua | sed 's/ /\n/g;s/\.\///g' | cat -n
+   read -p "Switch to theme: " num
+   swap_cmd $num
+}
 
-all: $(DESTDIR)
-	cd $(DESTDIR) && \
-	echo -n $(git pull)#"Already up-to-date."; \
-	git submodule init ; \
-	git submodule update; \
-	$(swap_dialog)
+swap_cmd(){
+   num=$1
+   if [ ! -z $num -a $num -ge 1 -a $num -le $n_themes ] ; then
+      NEW_THEME=$(find -name rc.\*.lua | head -n $num | tail -n 1)
+      swap_name $NEW_THEME
+   else echo " !! Aborted. " ; fi
+}
 
-$(DESTDIR):
-	git clone https://github.com/${PROJECT}.git $@
+swap_name(){
+   NEW_THEME=$1
+   cp $NEW_THEME rc.lua
+   echo -e "\nTheme is now $NEW_THEME"
+}
+
+restart_awesome(){
+   pkill -HUP awesome
+}
+
+cd $DESTDIR && echo -n $(git pull)
+git submodule init
+git submodule update
+
+if [ $num -ne 0 ] ; then
+   swap_cmd $swap
+elif [ ! -z $str ] ; then
+   swap_name $str
+else
+   swap_dialog
+fi
+if [ $restartA -eq 1 ] ; then
+   restart_awesome
+fi
+exit
