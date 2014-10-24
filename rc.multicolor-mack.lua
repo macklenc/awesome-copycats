@@ -15,7 +15,7 @@ local beautiful = require("beautiful")
 local naughty   = require("naughty")
 local drop      = require("scratchdrop")
 local lain      = require("lain")
-local assault = require('assault')
+--local batman = require('batman')
 -- }}}
 
 -- {{{ Error handling
@@ -225,7 +225,6 @@ tempwidget = lain.widgets.temp({
 })
 
 -- Battery
---baticon = wibox.widget.imagebox(beautiful.widget_batt)
 batwidget = lain.widgets.bat({
     settings = function()
         if bat_now.perc == "N/A" then
@@ -240,7 +239,8 @@ batwidget = lain.widgets.bat({
 local spacer = wibox.widget.textbox()
 spacer:set_text(" ")
 
-myassault = assault({
+--Live battery icon
+mybatman = lain.widgets.batman({
 	battery = "BAT0", -- battery ID to get data from
    	adapter = "AC", -- ID of the AC adapter to get data from
   	critical_level = 0.15,
@@ -251,6 +251,7 @@ myassault = assault({
 	height = 8,
 	stroke_width = 1
 })
+
 -- ALSA volume
 volicon = wibox.widget.imagebox(beautiful.widget_vol)
 volumewidget = lain.widgets.alsa({
@@ -422,7 +423,7 @@ for s = 1, screen.count() do
     end
     --right_layout:add(baticon)
     --right_layout:add(batwidget)
-    right_layout:add(myassault)
+    right_layout:add(mybatman)
     right_layout:add(spacer)
     right_layout:add(batwidget)
     --right_layout:add(clockicon)
