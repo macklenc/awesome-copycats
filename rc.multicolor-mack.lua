@@ -1,7 +1,8 @@
 --[[
 
-     Multicolor Awesome WM config 2.0
+     Multicolor-Macklen Mod Awesome WM config 2.0
      github.com/copycat-killer
+     github.com/macklenc
 
 --]]
 

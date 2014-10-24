@@ -1,9 +1,13 @@
 #! /bin/bash
 
+# Adapted from copycat-killer's "switch-theme" (cleanup, enhancements and switch to bash/Linux)
+# Bash script created by Chris Macklen
+
 # Awesome Copycats switch theme script
 # It also updates to latest commit.
 
 DESTDIR=~/.config/awesome
+ORIGPROJECT=copycat-killer/awesome-copycats
 PROJECT=macklenc/awesome-copycats
 n_themes=$(find -name rc.\*.lua | wc -l)
 restartA=0
@@ -43,7 +47,7 @@ done
 
 swap_dialog(){
    echo
-   echo "see https://github.com/$PROJECT"
+   echo "see https://github.com/$ORIGPROJECT and https://github.com/$PROJECT"
    find -name rc.\*.lua | sed 's/ /\n/g;s/\.\///g' | cat -n
    read -p "Switch to theme: " num
    swap_cmd $num
